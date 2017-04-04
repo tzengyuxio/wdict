@@ -2,11 +2,12 @@
 
 import sys
 from urllib.request import urlopen
+from urllib.parse import quote
 
 from bs4 import BeautifulSoup
 
 LANGS = ['ja', 'zh']
-LANG_NAMES = {'ja': '日本語', 'zh': '中文'}
+LANG_NAMES = {'ja': '日本語', 'zh': '中文', 'zh-tw': '中文-台灣正體', 'zh-cn': '中文-大陆简体'}
 
 
 def main():
@@ -23,8 +24,16 @@ def main():
         lang = a_node.attrs['lang']
         if lang not in LANGS:
             continue
-        print('%s: %s' %
-              (LANG_NAMES[lang], a_node.attrs['title'].split(' ')[0]))
+        if lang == 'zh':
+            title = a_node.attrs['title'].split(' ')[0]
+            for key in ['zh-cn', 'zh-tw']:
+                req_url = "https://zh.wikipedia.org/%s/%s" %(key, quote(title, safe=''))
+                soup = BeautifulSoup(urlopen(req_url), 'html.parser')
+                loc_title = soup.find(id='firstHeading').text
+                print('%s: %s' % (LANG_NAMES[key], loc_title))
+        else:
+            print('%s: %s' %
+                  (LANG_NAMES[lang], a_node.attrs['title'].split(' ')[0]))
 
 
 main()
