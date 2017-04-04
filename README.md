@@ -2,6 +2,10 @@
 
 A dictionary based on wikipedia, from English to Chinese/Japanese.
 
+## Demo
+
+![gif](http://i.imgur.com/egOo4S4.gif)
+
 ## Usage
 
 ```
