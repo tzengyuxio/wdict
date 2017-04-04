@@ -1,8 +1,9 @@
 #!/usr/local/bin/python3
 
 import sys
-from urllib.request import urlopen
+from urllib.error import HTTPError
 from urllib.parse import quote
+from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
 
@@ -17,7 +18,12 @@ def main():
 
     word = sys.argv[1]
     request_url = "https://en.wikipedia.org/wiki/" + word
-    soup = BeautifulSoup(urlopen(request_url), 'html.parser')
+    try:
+        u = urlopen(request_url)
+    except HTTPError as e:
+        print('%s: %s' % (e.code, e.msg))
+        sys.exit(1)
+    soup = BeautifulSoup(u, 'html.parser')
     list_items = soup.find(id='p-lang').find('ul').find_all('li')
     for item in list_items:
         a_node = item.find('a')
